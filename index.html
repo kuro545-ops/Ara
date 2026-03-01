@@ -1,0 +1,250 @@
+"<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Untuk Shafira Komara Devi ✨</title>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --cream-bg: #FFF8E7; 
+            --text-color: #5d5d5d;
+            --glass: rgba(255, 255, 255, 0.5);
+        }
+
+        body, html {
+            margin: 0; padding: 0;
+            width: 100%; height: 100%;
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--cream-bg);
+            color: var(--text-color);
+            overflow: hidden;
+        }
+
+        /* --- STAGES --- */
+        .stage {
+            position: fixed; top: 0; left: 0;
+            width: 100%; height: 100%;
+            display: flex; flex-direction: column;
+            justify-content: center; align-items: center;
+            text-align: center;
+            opacity: 0; visibility: hidden;
+            transition: opacity 0.8s ease;
+            z-index: 10;
+        }
+        .active-stage { opacity: 1; visibility: visible; }
+
+        /* --- STORY --- */
+        .story-text {
+            font-size: 1.3rem; max-width: 85%;
+            line-height: 1.8; color: #7f8c8d;
+            min-height: 80px; margin-bottom: 30px;
+        }
+        .btn-action {
+            padding: 12px 35px; border: none;
+            background: #e1b382; color: white;
+            border-radius: 25px; font-weight: bold;
+            cursor: pointer; box-shadow: 0 4px 15px rgba(225, 179, 130, 0.4);
+        }
+
+        /* --- BALON --- */
+        #balloonContainer { position: relative; width: 100%; height: 100%; }
+        .balloon-wrapper { position: absolute; cursor: pointer; animation: float 4s ease-in-out infinite alternate; }
+        .popped { animation: pop 0.3s ease-out forwards !important; pointer-events: none; }
+        @keyframes pop {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.6); opacity: 0; }
+            100% { transform: scale(0); opacity: 0; }
+        }
+        .balloon {
+            width: 80px; height: 100px;
+            border-radius: 50% 50% 50% 50% / 40% 40% 60% 60%;
+            position: relative; box-shadow: inset -10px -10px 15px rgba(0,0,0,0.07);
+        }
+        .balloon::after {
+            content: ""; position: absolute; bottom: -6px; left: 50%;
+            transform: translateX(-50%); border-left: 8px solid transparent;
+            border-right: 8px solid transparent; border-bottom: 12px solid currentColor;
+        }
+        .string {
+            width: 2px; height: 60px; background: rgba(0, 0, 0, 0.1);
+            position: absolute; bottom: -65px; left: 50%; transform: translateX(-50%);
+        }
+        @keyframes float { from { transform: translateY(0) rotate(-2deg); } to { transform: translateY(-30px) rotate(2deg); } }
+
+        /* --- KADO --- */
+        .gift-box { font-size: 110px; cursor: pointer; animation: shake 0.6s infinite; display: inline-block; }
+        @keyframes shake { 0%, 100% { transform: rotate(0); } 25% { transform: rotate(8deg); } 75% { transform: rotate(-8deg); } }
+
+        /* --- POLAROID GALLERY (FIXED) --- */
+        #mainContent {
+            display: none; width: 90%; max-width: 800px;
+            margin: 40px auto; text-align: center;
+            animation: fadeIn 1.5s ease;
+        }
+        .photo-gallery { 
+            display: flex; gap: 25px; overflow-x: auto; 
+            padding: 40px 20px; scrollbar-width: none;
+            justify-content: flex-start;
+        }
+        .polaroid {
+            min-width: 200px; 
+            background: #ffffff; /* Bingkai putih polaroid */
+            padding: 15px 15px 45px 15px; /* Padding bawah lebih lebar untuk teks */
+            box-shadow: 0 10px 20px rgba(0,0,0,0.15); 
+            transform: rotate(var(--r));
+            transition: transform 0.3s ease;
+            border: 1px solid #eee;
+        }
+        .polaroid img { 
+            width: 100%; 
+            height: 180px; 
+            object-fit: cover; 
+            display: block;
+            border: 1px solid #f0f0f0;
+        }
+        .polaroid p {
+            margin: 15px 0 0 0;
+            font-family: 'Dancing Script', cursive;
+            font-size: 1.2rem;
+            color: #555;
+        }
+        .polaroid:hover {
+            transform: scale(1.05) rotate(0deg);
+            z-index: 100;
+        }
+        
+        .message-glass {
+            background: var(--glass); backdrop-filter: blur(10px);
+            padding: 30px; border-radius: 30px; margin-top: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.03); border: 1px solid rgba(255,255,255,0.5);
+        }
+        h1 { font-family: 'Dancing Script', cursive; color: #d4a373; font-size: 2.8rem; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    </style>
+</head>
+<body>
+
+    <audio id="bgMusic" loop><source src="musik_ultah.mp3" type="audio/mpeg"></audio>
+    <audio id="popSound"><source src="meletus.mp3" type="audio/mpeg"></audio>
+    <audio id="tadaSound"><source src="tada.mp3" type="audio/mpeg"></audio>
+
+    <div id="storyStage" class="stage active-stage">
+        <div class="story-text" id="storyText">Klik mulai untuk melihat sesuatu... ✨</div>
+        <button class="btn-action" id="btnAction" onclick="handleStory()">Mulai</button>
+    </div>
+
+    <div id="balloonStage" class="stage">
+        <p style="position:absolute; top:10%;">Pecahkan 5 balon keberuntunganmu! 🎈</p>
+        <div id="balloonContainer"></div>
+    </div>
+
+    <div id="giftStage" class="stage">
+        <h1>Ada sesuatu untukmu... 🎁</h1>
+        <div class="gift-box" onclick="openGift()">🎁</div>
+        <p style="margin-top: 20px;">Klik kadonya, Shafira!</p>
+    </div>
+
+    <div id="mainContent">
+        <h1>Happy Birthday, Shafira! 🌸</h1>
+        <div class="photo-gallery">
+            <div class="polaroid" style="--r: -4deg"><img src="img1.jpg" alt="Foto 1"><p>Sweet ✨</p></div>
+            <div class="polaroid" style="--r: 3deg"><img src="img2.jpg" alt="Foto 2"><p>Memories 🌸</p></div>
+            <div class="polaroid" style="--r: -2deg"><img src="img3.jpg" alt="Foto 3"><p>Joy 🌞</p></div>
+        </div>
+        <div class="message-glass">
+            <p id="finalMsg"></p>
+        </div>
+        <button onclick="location.reload()" style="margin-top:30px; background:none; border:none; color:#bbb; cursor:pointer;">Ulangi</button>
+    </div>
+
+    <script>
+        const stories = [
+            "Hi ra... ✨",
+            "Gak kerasa ya, ternyata kita udah kurang lebih 5 tahun berteman.",
+            "Dari mulai yang nggak kenal, sampai jadi sedekat sekarang.",
+            "Makasih ya udah selalu ada di setiap fase hidupku selama ini.",
+            "Aku bener-bener bersyukur di hidupku ini bertemu kamu.",
+            "Dan di hari spesialmu ini, aku punya sesuatu buat kamu... 😊"
+        ];
+        const finalGreeting = "Selamat ulang tahun, Ara! Ngga kerasa sudah 5 tahun kita berteman. Aku cuma mau kamu tahu kalau aku bangga banget sama kamu. Semoga dengan bertamnahnya usia ini kamu makin bahagia, makin sehat, makin sabar, dan semoga semua doa baikmu dikabulkan. I'm so proud of you, and I'll always be here for you! 💖✨;"
+
+        let currentIdx = 0;
+        const bgMusic = document.getElementById('bgMusic');
+        const popSound = document.getElementById('popSound');
+        const tadaSound = document.getElementById('tadaSound');
+
+        function typeWriter(text, elementId, speed, cb) {
+            let i = 0;
+            const el = document.getElementById(elementId);
+            el.innerHTML = "";
+            function type() {
+                if (i < text.length) {
+                    el.innerHTML += text.charAt(i);
+                    i++;
+                    setTimeout(type, speed);
+                } else if (cb) cb();
+            }
+            type();
+        }
+
+        function handleStory() {
+            if (currentIdx === 0) bgMusic.play().catch(e => {});
+            document.getElementById('btnAction').style.display = 'none';
+            if (currentIdx < stories.length) {
+                typeWriter(stories[currentIdx], 'storyText', 50, () => {
+                    document.getElementById('btnAction').style.display = 'inline-block';
+                    document.getElementById('btnAction').innerText = "Lanjut ✨";
+                    currentIdx++;
+                });
+            } else { changeStage('storyStage', 'balloonStage'); createBalloons(); }
+        }
+
+        function changeStage(curr, next) {
+            document.getElementById(curr).classList.remove('active-stage');
+            setTimeout(() => {
+                document.getElementById(curr).style.display = 'none';
+                const nextStage = document.getElementById(next);
+                nextStage.style.display = 'flex';
+                setTimeout(() => nextStage.classList.add('active-stage'), 50);
+            }, 800);
+        }
+
+        function createBalloons() {
+            const container = document.getElementById('balloonContainer');
+            const colors = ['#f9d5e5', '#eeac99', '#e06377', '#c83349', '#5b9aa0'];
+            let popped = 0;
+            for (let i = 0; i < 5; i++) {
+                const w = document.createElement('div');
+                w.className = 'balloon-wrapper';
+                w.style.left = (15 + (i * 15)) + '%';
+                w.style.top = (30 + Math.random() * 20) + '%';
+                w.innerHTML = `<div class="balloon" style="background:${colors[i]}; color:${colors[i]}"></div><div class="string"></div>`;
+                w.onclick = function() {
+                    if(this.classList.contains('popped')) return;
+                    popSound.currentTime = 0; popSound.play(); 
+                    this.classList.add('popped');
+                    setTimeout(() => {
+                        this.remove(); popped++;
+                        if (popped === 5) changeStage('balloonStage', 'giftStage');
+                    }, 300);
+                };
+                container.appendChild(w);
+            }
+        }
+
+        function openGift() {
+            tadaSound.play();
+            confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
+            document.getElementById('giftStage').classList.remove('active-stage');
+            setTimeout(() => {
+                document.getElementById('giftStage').style.display = 'none';
+                document.getElementById('mainContent').style.display = 'block';
+                document.body.style.overflowY = 'auto';
+                typeWriter(finalGreeting, 'finalMsg', 40);
+            }, 800);
+        }
+    </script>
+</body>
+</html>
